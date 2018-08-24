@@ -2,21 +2,22 @@ import requests
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import time
-# respond = requests.get("https://www.baidu.com")
-# print(respond.content.decode())
+import re
+#获取地名与URL简称的对应关系
+test = requests.get("https://kyfw.12306.cn/otn/resources/js/framework/station_name.js?station_version=1.9063")
+respond = re.findall(r'([\u4e00-\u9fa5]+)\|([A-Z]+)',test.text)
+list_2 = dict(respond)
+print(list_2)
+print(list_2["北京北"])
 
-driver = webdriver.Chrome()
-driver.get("http://trains.ctrip.com/TrainBooking/SearchTrain.aspx###")
-time.sleep(1)
-driver.find_element_by_id("notice01").send_keys("北京")
-time.sleep(1)
-driver.find_element_by_id("notice08").send_keys("上海")
-time.sleep(1)
-js = 'document.getElementById("dateObj").removeAttribute("readonly");'
-time.sleep(1)
-driver.execute_script(js)
-time.sleep(1)
-driver.find_element_by_id("dateObj").clear()
-driver.find_element_by_id("dateObj").send_keys("2018-08-19")
-time.sleep(1)
-driver.find_element_by_id("searchbtn").send_keys(Keys.ENTER)
+
+
+startstation = input("请输入起点")
+startstation = list_2[startstation]
+endstation = input("请输入终点")
+endstation = list_2[endstation]
+times = input("请输入时间 2018-09-12")
+url = "https://kyfw.12306.cn/otn/leftTicket/query?leftTicketDTO.train_date=%s&leftTicketDTO.from_station=%s&leftTicketDTO.to_station=%s&purpose_codes=ADULT"%(times,startstation,endstation)
+print(url)
+respond = requests.get(url)
+print(respond.text)
