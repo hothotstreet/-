@@ -3,6 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import time
 import re
+import json
 #获取地名与URL简称的对应关系
 test = requests.get("https://kyfw.12306.cn/otn/resources/js/framework/station_name.js?station_version=1.9063")
 respond = re.findall(r'([\u4e00-\u9fa5]+)\|([A-Z]+)',test.text)
@@ -20,4 +21,10 @@ times = input("请输入时间 2018-09-12")
 url = "https://kyfw.12306.cn/otn/leftTicket/query?leftTicketDTO.train_date=%s&leftTicketDTO.from_station=%s&leftTicketDTO.to_station=%s&purpose_codes=ADULT"%(times,startstation,endstation)
 print(url)
 respond = requests.get(url)
-print(respond.text)
+# respond = '{"validateMessagesShowId":"_validatorMessage","status":true,"httpstatus":200,"data":{"result":["ysuiqOZovis4FzIzlNDv179hEkAKPnVvGA1MOMGK4cbT2SwTHsiM0KzHSCN12XRJ9gjR9i3syByn%0AtZ5TD77Mszxpyu2DJBsFxmI0YSKmQtKd9Tmi%2Fe9bQc59f%2BqknCOYz9pTQ2%2FgcwTVsvODscflPj9F%0Am%2BU5uZsbDQxQQew0BLLdRtId8T0%2FWiAuYsy9SAoQMjHC%2FIeD3ZsHb%2FeaNh%2FFjrIbrYtSIlUJ|预订|240000S10101|S101|BJP|TOP|BJP|BOP|07:10|07:19|00:09|Y|1%2FuoDFj1iR0659s0bByLAg%3D%3D|20180910|3|P2|01|02|0|0|||||||有||||||||O0|O|0","4imaIRdJHSgOTy0XbLQ3poYRyPZZXuIzvra8L%2FfoTI0bRQHWY%2Byru69EvROb9%2B%2BbAgktNxg8wTpU%0AqHwgRKoNW0FzvGwQWDJVx1Xa0LHrTcH1iBN9YNCo3BPu2Nfh1G%2BJj6fkYbCCRHtHulWIrewt%2FomG%0AHkHQyJTOJnFVEqrF5sOFTMQZn5msTqck6trVPAIG7kF7HLKKugG39VjRhA4E1GLtYhI1CLfd|预订|240000S10301|S103|BXP|TOP|BJP|BOP|07:30|07:39|00:09|Y|nbmJlea0BOsPUtoOs6AoXA%3D%3D|20180910|3|P3|02|03|0|0|||||||有||||||||O0|O|0","zheFxCzJwGngmbRRiFeuZM%2FLJLRLW5V5O30u1Leo2jXZce2WcMwr%2F8QHrvxJolgHQW5hsrpsjvTK%0AXEHeO%2FDguY9FJ5fJoMCMoGw4SKcQK8Te7AGtyRGgKEXp79%2FQBQ6ATA8dLN3ZEZA45U99Jsq%2FIhfQ%0AGCmBs9S8nD6CvOCPr4yCDipA6vPouc48R1a%2BM96Lg6sz9FVFCtfzeTxQA83WXOff2IGsKPcf|预订|240000S10501|S105|BXP|TOP|BJP|BOP|08:02|08:11|00:09|Y|nbmJlea0BOsPUtoOs6AoXA%3D%3D|20180910|3|P4|02|03|0|0|||||||有||||||||O0|O|0","tY6zyRWd7clfHRwoBWsiVBySrSXihU3yE%2FLbU6l3rqfEAVl9ufnD3Eukik4WczzT9uqu4xHSOx4p%0AyoL%2BjWrTnLnKn3%2Fo6KutRZQSVbwoGH1%2FjOyJ4MkBxEqlI3g1eHmp1%2BRNtQWxSs62v0s7LhUTuPjb%0ADux%2FWRYuv%2BG6YznSD0%2FbzeCgfxeRYVadHlECIz1mffY3bzle6dRAWc24mvGx89Pz9%2BLUPE%2FY|预订|240000S10701|S107|BXP|TOP|BJP|BOP|18:21|18:30|00:09|Y|aIe0i%2BXaB2r8KOmhcUsq3g%3D%3D|20180910|3|P3|02|03|0|0|||||||有||||||||O0|O|0"],"flag":"1","map":{"BOP":"北京东","BJP":"北京"}},"messages":[],"validateMessages":{}}'
+respond = respond.content.decode()
+respond = json.loads(respond)
+# print(respond["data"]["result"][0].split("|"))
+
+for i in respond["data"]["result"]:
+    print('车次：', i.split('|')[3],'无座：', i.split('|')[26],'高级软座：', i.split('|')[21],'二等座：', i.split('|')[31])
