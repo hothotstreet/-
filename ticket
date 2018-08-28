@@ -4,14 +4,15 @@ from selenium.webdriver.common.keys import Keys
 import time
 import re
 import json
+from prettytable import PrettyTable
+from colorama import Fore,init
+from docopt import docopt
+
 #获取地名与URL简称的对应关系
+init(autoreset=True)
 test = requests.get("https://kyfw.12306.cn/otn/resources/js/framework/station_name.js?station_version=1.9063")
 respond = re.findall(r'([\u4e00-\u9fa5]+)\|([A-Z]+)',test.text)
 list_2 = dict(respond)
-print(list_2)
-print(list_2["北京北"])
-
-
 
 startstation = input("请输入起点")
 startstation = list_2[startstation]
@@ -25,6 +26,20 @@ respond = requests.get(url)
 respond = respond.content.decode()
 respond = json.loads(respond)
 # print(respond["data"]["result"][0].split("|"))
-
+pt = PrettyTable(["车次","车站","日期","发车/到站时间","耗时","商务特等座","高级软座","一等座","二等座","硬卧","硬座","无座"])
 for i in respond["data"]["result"]:
-    print('车次：', i.split('|')[3],'无座：', i.split('|')[26],'高级软座：', i.split('|')[21],'二等座：', i.split('|')[31])
+    news = i.split('|')
+    train = news[3]
+    trainstation = list(list_2.keys())[list(list_2.values()).index(news[4])]+"/"+list(list_2.keys())[list(list_2.values()).index(news[5])]
+    traintimes = news[13]
+    starendtimes = news[8]+"/"+news[9]
+    alltimes = Fore.GREEN+news[10]
+    bussiness_site = news[33] or "--"
+    expert_site = news[22] or "--"
+    first_site = news[32] or "--"
+    second_site = news[31] or "--"
+    hard_site = news[29] or "--"
+    hardhard_site = news[30] or "--"
+    no_site = news[27] or "--"
+    pt.add_row([Fore.RED+train,trainstation,traintimes,starendtimes,alltimes,bussiness_site,expert_site,first_site,second_site,hard_site,hardhard_site,no_site])
+print(pt)
