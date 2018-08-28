@@ -9,7 +9,6 @@ from colorama import Fore,init
 from docopt import docopt
 
 #获取地名与URL简称的对应关系
-init(autoreset=True)
 test = requests.get("https://kyfw.12306.cn/otn/resources/js/framework/station_name.js?station_version=1.9063")
 respond = re.findall(r'([\u4e00-\u9fa5]+)\|([A-Z]+)',test.text)
 list_2 = dict(respond)
@@ -30,10 +29,10 @@ pt = PrettyTable(["车次","车站","日期","发车/到站时间","耗时","商
 for i in respond["data"]["result"]:
     news = i.split('|')
     train = news[3]
-    trainstation = list(list_2.keys())[list(list_2.values()).index(news[4])]+"/"+list(list_2.keys())[list(list_2.values()).index(news[5])]
+    trainstation = Fore.GREEN+list(list_2.keys())[list(list_2.values()).index(news[4])]+Fore.RESET+'\n'+Fore.RED+list(list_2.keys())[list(list_2.values()).index(news[5])]+Fore.RESET
     traintimes = news[13]
-    starendtimes = news[8]+"/"+news[9]
-    alltimes = Fore.GREEN+news[10]
+    starendtimes = Fore.LIGHTBLUE_EX+news[8]+Fore.RESET+'\n'+Fore.LIGHTGREEN_EX+news[9]+Fore.RESET
+    alltimes = news[10]
     bussiness_site = news[33] or "--"
     expert_site = news[22] or "--"
     first_site = news[32] or "--"
@@ -41,5 +40,5 @@ for i in respond["data"]["result"]:
     hard_site = news[29] or "--"
     hardhard_site = news[30] or "--"
     no_site = news[27] or "--"
-    pt.add_row([Fore.RED+train,trainstation,traintimes,starendtimes,alltimes,bussiness_site,expert_site,first_site,second_site,hard_site,hardhard_site,no_site])
+    pt.add_row([train,trainstation,traintimes,starendtimes,alltimes,bussiness_site,expert_site,first_site,second_site,hard_site,hardhard_site,no_site])
 print(pt)
